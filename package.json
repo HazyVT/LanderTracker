@@ -28,7 +28,8 @@
     "@emotion/styled": "^11.14.0",
     "@supabase/supabase-js": "^2.49.3",
     "framer-motion": "^12.6.2",
-    "fs": "^0.0.1-security"
+    "fs": "^0.0.1-security",
+    "react-router-dom": "^7.4.1"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
