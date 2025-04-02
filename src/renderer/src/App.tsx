@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 function App(): JSX.Element {
   return (
-    <Box>
+    <Box bgColor="#242424">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<SkylanderGrid />} />

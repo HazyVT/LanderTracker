@@ -18,6 +18,7 @@ type dbReturn = {
 
 function SkylanderGrid(): JSX.Element {
   const [skylanders, setSkylanders] = useState<Skylander[]>([])
+  const [collected, setCollected] = useState<number>(0)
 
   const getSkylanders = async (): Promise<void> => {
     const userData = loadUserData()
@@ -28,20 +29,27 @@ function SkylanderGrid(): JSX.Element {
       .select('id, name, type ( name ), image, game ( name )')
     if (error == null) {
       const newArray: Skylander[] = []
+      let coll = 0
       //@ts-expect-error fuck supabase
       data.forEach((value: dbReturn) => {
+        const obtained = userData.items[value.id - 1].obtained
         const skylander = new Skylander(
           value.id,
           value.name,
           value.type.name,
           value.game.name,
           value.image,
-          userData.items[value.id - 1].obtained
+          obtained
         )
         newArray.push(skylander)
-      })
 
+        if (obtained) coll++
+      })
+      newArray.sort(function (a, b) {
+        return a.id - b.id
+      })
       setSkylanders(newArray)
+      setCollected(coll)
     }
   }
 
@@ -50,20 +58,28 @@ function SkylanderGrid(): JSX.Element {
     if (userData == undefined) throw `Error`
 
     const copy: Skylander[] = []
+    let coll = 0
 
     skylanders.forEach((skylander) => {
+      const obtained = userData.items[skylander.id - 1].obtained
       const updated = new Skylander(
         skylander.id,
         skylander.name,
         skylander.type,
         skylander.game,
         skylander.link,
-        userData.items[skylander.id - 1].obtained
+        obtained
       )
       copy.push(updated)
+
+      if (obtained) coll++
     })
 
+    copy.sort(function (a, b) {
+      return a.id - b.id
+    })
     setSkylanders(copy)
+    setCollected(coll)
   }
 
   const setSkylanderToObtained = (id: number): void => {
@@ -93,22 +109,59 @@ function SkylanderGrid(): JSX.Element {
 
   return (
     <Box>
-      <SimpleGrid spacing={2} templateColumns="repeat(auto-fill, minmax(200px, 1fr))" padding={4}>
+      <Box
+        w="100vw"
+        h={8}
+        color="white"
+        pos="fixed"
+        top="0"
+        zIndex={1}
+        bgColor={'#242424'}
+        display={'flex'}
+        justifyContent={'center'}
+        alignItems={'center'}
+      >
+        <Text fontSize={14}>Total: {collected}</Text>
+      </Box>
+      <SimpleGrid
+        spacing={2}
+        templateColumns="repeat(auto-fill, minmax(200px, 1fr))"
+        padding={4}
+        marginTop={4}
+      >
         {skylanders.map((skylander) => {
           return (
             <Card
-              bgColor={skylander.obtained ? 'green.200' : 'white'}
+              bgColor={skylander.obtained ? 'green.200' : '#363636'}
               key={skylander.id}
               cursor={'pointer'}
+              color={skylander.obtained ? 'black' : 'white'}
               onClick={() => setSkylanderToObtained(skylander.id)}
+              pos="relative"
             >
-              <CardBody display={'flex'} flexDir="column" alignItems={'center'}>
+              <Box pos="absolute" padding={2}>
+                <Text
+                  fontSize={20}
+                  fontWeight={600}
+                  textShadow={skylander.obtained ? '2px 2px #FFF' : '2px 2px #000'}
+                >
+                  {skylander.name}
+                </Text>
+                <Text w="5rem" textShadow={skylander.obtained ? '2px 2px #FFF' : '2px 2px #000'}>
+                  {skylander.game}
+                </Text>
+              </Box>
+              <CardBody
+                display={'flex'}
+                flexDir="column"
+                alignItems={'center'}
+                justifyContent={'center'}
+              >
                 <Image
                   src={`https://eoakdlw8zm.ufs.sh/f/${skylander.link}`}
                   maxW="100px"
                   maxH="100px"
                 />
-                <Text>{skylander.name}</Text>
               </CardBody>
             </Card>
           )
