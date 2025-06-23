@@ -3,7 +3,7 @@ name: my-workflow
 on:
   push:
     branches:
-      - main
+      - HazyVT-actions
 
 jobs:
   build-linux:
