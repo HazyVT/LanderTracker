@@ -20,6 +20,8 @@ jobs:
       # run any `bun` or `bunx` command
       - name: Download packages
         run: bun install
+      
+      - name: Create executable
         run: bun export
 
       # Get current version from package json
