@@ -4,13 +4,18 @@ on:
   push:
 
 jobs:
-  my-job:
+  build-linux:
     name: my-job
     runs-on: ubuntu-latest
     steps:
       # ...
+      - name: Checkout
       - uses: actions/checkout@v4
+
+      - name: Install Bun
       - uses: oven-sh/setup-bun@v2
 
       # run any `bun` or `bunx` command
+      - name: Download packages
       - run: bun install
+      
