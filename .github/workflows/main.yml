@@ -2,12 +2,13 @@ name: my-workflow
 
 on:
   push:
+    branches:
+      - master
 
 jobs:
   build-linux:
     name: my-job
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/head/master'
     steps:
       # ...
       - name: Checkout
