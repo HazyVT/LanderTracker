@@ -15,13 +15,35 @@ jobs:
       - name: Get version
         id: pkg-ver
         uses: HazyVT/pkg-ver@v1.0.0
+  
+  create-release:
+    name: Create release 
+    runs-on: ubuntu-latest
+    needs: get-version
+    outputs:
+      upload-url: ${{ steps.create_release.outputs.upload_url}}
+    env:
+      version: ${{ needs.get-version.outputs.version }}
+    steps:
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.version }}
+          release_name: v${{ env.version }}
+          body: |
+            Test Release ${{ env.version }}
+          draft: false
+          prerelease: false
 
   build-windows:
     name: Create Windows Release
-    needs: get-version
+    needs: create-release
     runs-on: windows-latest
     env:
-      version: ${{ needs.get-version.outputs.version }}
+      url: ${{ needs.create-release.outputs.upload-url }}
     steps:
       # ...
       - name: Checkout
@@ -37,19 +59,38 @@ jobs:
       - name: Create executable
         run: bun export
 
-      # Create release
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
+      # Upload file to release
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.version }}
-          release_name: v${{ env.version }}
-          body: |
-            Test Release ${{ env.version }}
-          draft: false
-          prerelease: false
+          upload_url: ${{ env.url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./main.exe
+          asset_name: landertracker-win64.exe
+          asset_content_type: application
+
+  build-linux:
+    name: Create Windows Release
+    needs: create-release
+    runs-on: ubuntu-latest
+    env:
+      url: ${{ needs.create-release.outputs.upload-url }}
+    steps:
+      # ...
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+
+      # run any `bun` or `bunx` command
+      - name: Download packages
+        run: bun install
+      
+      - name: Create executable
+        run: bun export
 
       # Upload file to release
       - name: Upload Release Asset
@@ -58,101 +99,40 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./main.exe
-          asset_name: landertracker-win64.exe
+          upload_url: ${{ env.url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./main
+          asset_name: landertracker-linux-x64
           asset_content_type: application
 
-  build-linux:
+  build-mac-arm:
     name: Create Windows Release
-    needs: get-version
-    runs-on: ubuntu-latest
-    env:
-      version: ${{ needs.get-version.outputs.version }}
-    steps:
-        # ...
-        - name: Checkout
-          uses: actions/checkout@v4
-
-        - name: Install bun
-          uses: oven-sh/setup-bun@v2
-
-        # run any `bun` or `bunx` command
-        - name: Download packages
-          run: bun install
-        
-        - name: Create executable
-          run: bun export
-
-        # Create release
-        - name: Create release
-          id: create_release
-          uses: actions/create-release@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            tag_name: ${{ env.version }}
-            release_name: v${{ env.version }}
-            body: |
-              Test Release ${{ env.version }}
-            draft: false
-            prerelease: false
-
-        # Upload file to release
-        - name: Upload Release Asset
-          id: upload-release-asset 
-          uses: actions/upload-release-asset@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-            asset_path: ./main
-            asset_name: landertracker-linux-x64
-            asset_content_type: application
-
-  build-mac:
-    name: Create Windows Release
-    needs: get-version
+    needs: create-release
     runs-on: macos-latest
     env:
-      version: ${{ needs.get-version.outputs.version }}
+      url: ${{ needs.create-release.outputs.upload-url }}
     steps:
-        # ...
-        - name: Checkout
-          uses: actions/checkout@v4
+      # ...
+      - name: Checkout
+        uses: actions/checkout@v4
 
-        - name: Install bun
-          uses: oven-sh/setup-bun@v2
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
 
-        # run any `bun` or `bunx` command
-        - name: Download packages
-          run: bun install
-        
-        - name: Create executable
-          run: bun export
+      # run any `bun` or `bunx` command
+      - name: Download packages
+        run: bun install
+      
+      - name: Create executable
+        run: bun export
 
-        # Create release
-        - name: Create release
-          id: create_release
-          uses: actions/create-release@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            tag_name: ${{ env.version }}
-            release_name: v${{ env.version }}
-            body: |
-              Test Release ${{ env.version }}
-            draft: false
-            prerelease: false
-
-        # Upload file to release
-        - name: Upload Release Asset
-          id: upload-release-asset 
-          uses: actions/upload-release-asset@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-            asset_path: ./main
-            asset_name: landertracker-osx-arm
-            asset_content_type: application
+      # Upload file to release
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ env.url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./main
+          asset_name: landertracker-macos-arm.app
+          asset_content_type: application
