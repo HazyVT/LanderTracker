@@ -18,11 +18,20 @@ const server = Bun.serve({
                 })
             }
         }
+
+        // Support files
         if (path == "/htmx.min.js") {
             return new Response(Bun.file("htmx.min.js"), {
                 headers: {"Content-Type": "text/javascript"}
             });
         }
+        if (path == "/index.css") {
+            return new Response(Bun.file("index.css"), {
+                headers: {"Content-Type": "text/css"}
+            });
+        }
+
+        // HTML File response
         return new Response(Bun.file("index.html"));
     }
 })
