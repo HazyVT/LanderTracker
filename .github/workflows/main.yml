@@ -21,6 +21,11 @@ jobs:
       - name: Download packages
         run: bun install
 
+      # Get current version from package json
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+
       # Create release
       - name: Create release
         id: create_release
@@ -28,9 +33,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.event.head_commit.message }}
-          release_name: ${{ github.event.head_commit.message }}
+          tag_name: ${{ steps.package-version.outputs.current-version}}
+          release_name: Release ${{ steps.package-version.outputs.current-version}}
           body: |
-            Test Release v1.0.0
+            Test Release ${{ steps.package-version.outputs.current-version}}
           draft: false
           prerelease: false
