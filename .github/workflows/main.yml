@@ -22,9 +22,9 @@ jobs:
         run: bun install
 
       # Get current version from package json
-      - name: get-npm-version
-        id: package-version
-        uses: action-get-npm-version@1.1.1
+      - name: Get Version
+        id: pkg-ver
+        uses: HazyVT/pkg-ver@v1.0.0
 
       # Create release
       - name: Create release
@@ -33,10 +33,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.package-version.outputs.current-version}}
-          release_name: Release ${{ steps.package-version.outputs.current-version}}
+          tag_name: ${{ steps.pkg-ver.outputs.version}}
+          release_name: Release ${{ steps.pkg-ver.outputs.version}}
           body: |
-            Test Release ${{ steps.package-version.outputs.current-version}}
+            Test Release ${{ steps.pkg-ver.outputs.version}}
           draft: false
           prerelease: false
 
