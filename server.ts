@@ -1,11 +1,8 @@
 import { Database } from 'bun:sqlite';
-import { renderToReadableStream } from 'react-dom/server';
-import { getSkylanderItem, getAllSkylanders } from './components/item';
+import { getAllSkylanders } from './components/item';
 import Skylander from './models/skylander';
 
 const db = new Database("mydb.sqlite", {strict: true});
-
-
 
 const server = Bun.serve({
     async fetch (req) {

@@ -14,5 +14,9 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "webview-bun": "^2.4.0"
+  },
+  "scripts": {
+    "export": "bun build index.ts server.ts webview.ts --compile --outfile main",
+    "dev": "bun run index.ts"
   }
 }
