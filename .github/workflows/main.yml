@@ -24,7 +24,7 @@ jobs:
       # Get current version from package json
       - name: get-npm-version
         id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
+        uses: action-get-npm-version@1.1.1
 
       # Create release
       - name: Create release
