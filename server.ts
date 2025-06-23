@@ -1,5 +1,5 @@
 import { Database } from 'bun:sqlite';
-import { getAllSkylanders } from './components/item';
+import { getAllSkylanders, getSkylanderItem } from './components/item';
 import Skylander from './models/skylander';
 
 const db = new Database("mydb.sqlite", {strict: true});
@@ -9,30 +9,29 @@ const server = Bun.serve({
         const path = new URL(req.url).pathname;
 
         if (path == "/clicked") {
-            const query = db.query("SELECT * FROM skylanders;").as(Skylander);
-            const resp = query.all();
-            if (resp != null) {
-                const stream = await getAllSkylanders(resp)
-                return new Response(stream, {
-                    headers: {"Content-Type": "text/html"}
-                })
-            }
+            const skylander = new Skylander();
+            skylander.id = 1;
+            skylander.name = "name";
+            skylander.image = "image";
+            return new Response(await getSkylanderItem(skylander), {
+                headers: {"Content-Type": "text/html"}
+            })
         }
 
         // Support files
         if (path == "/htmx.min.js") {
-            return new Response(Bun.file("htmx.min.js"), {
+            return new Response(Bun.file("support/htmx.min.js"), {
                 headers: {"Content-Type": "text/javascript"}
             });
         }
         if (path == "/index.css") {
-            return new Response(Bun.file("index.css"), {
+            return new Response(Bun.file("support/index.css"), {
                 headers: {"Content-Type": "text/css"}
             });
         }
 
         // HTML File response
-        return new Response(Bun.file("index.html"));
+        return new Response(Bun.file("support/index.html"));
     }
 })
 
