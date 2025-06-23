@@ -1,9 +1,9 @@
-name: my-workflow
+name: build
 
 on:
   push:
     branches:
-      - HazyVT-actions
+      - main
 
 jobs:
   get-version:
