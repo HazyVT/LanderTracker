@@ -1,10 +1,8 @@
 import { Webview } from "webview-bun";
+import { Database } from 'bun:sqlite'
+
 
 const webview = new Webview();
 webview.navigate("http://localhost:3000");
 
-webview.bind("sendProc", (...args) => {
-    //@ts-expect-error
-    process.send(...args);
-})
 webview.run();

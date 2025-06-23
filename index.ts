@@ -1,9 +1,6 @@
-const webview = Bun.spawn(["bun","webview.ts"] ,{
-    ipc(message, subprocess, handle) {
-        console.log(message);
-    },
-    onExit() {
-        server.kill();
-    }
-});
-const server = Bun.spawn(["bun","server.ts"]);
+const webview = new Worker("webview.ts");
+
+webview.addEventListener("close", () => {
+    server.terminate();
+})
+const server = new Worker("server.ts");
