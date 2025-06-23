@@ -12,10 +12,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Bun
+      - name: Install bun
         uses: oven-sh/setup-bun@v2
 
       # run any `bun` or `bunx` command
       - name: Download packages
         run: bun install
-      
+
+      # Create release
+      - name: Create release
+        id: create_release
+        uses: actions/creat-release@v1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.head_commit.message }}
+          release_name: ${{ github.event.head_commit.message }}
+          overwrite: true
+          body: |
+            Test Release v1.0.0
+          draft: false
+          prerelease: false
