@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
-    </head>
-    <body>
-        <h1>Hello World!</h1>
-        <button onclick="press('Ping!').then(log)">Press Me!</button>
-    </body>
-    <script>
-        const websocket = new WebSocket();
-    </script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script defer src="htmx.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <h1>Hello World</h1>
+    <button onclick="sendProc('Hello from Child')">Click Me!</button>
+    <div hx-get="/clicked" hx-trigger="click" hx-swap="outerHTML">
+        Click Me!
+    </div>
+</body>
 </html>
