@@ -10,12 +10,12 @@ jobs:
     steps:
       # ...
       - name: Checkout
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v4
 
       - name: Install Bun
-      - uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@v2
 
       # run any `bun` or `bunx` command
       - name: Download packages
-      - run: bun install
+        run: bun install
       
