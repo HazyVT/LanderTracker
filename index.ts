@@ -1,6 +1,8 @@
-const webview = new Worker("webview.ts");
+import { Webview } from "webview-bun";
 
-webview.addEventListener("close", () => {
-    server.terminate();
-})
 const server = new Worker("server.ts");
+
+const webview = new Webview();
+webview.title = "LanderTracker";
+webview.navigate("http://localhost:3000")
+webview.run();
