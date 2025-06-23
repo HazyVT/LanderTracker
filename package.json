@@ -17,7 +17,7 @@
     "webview-bun": "^2.4.0"
   },
   "scripts": {
-    "export": "bun build index.ts server.ts --compile --outfile main",
+    "export": "bun build index.ts server.ts --compile --minify --outfile main",
     "dev": "bun run index.ts"
   }
 }
