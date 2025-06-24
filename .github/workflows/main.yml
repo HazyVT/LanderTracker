@@ -12,6 +12,8 @@ jobs:
     outputs:
       version: ${{ steps.pkg-ver.outputs.version }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Get version
         id: pkg-ver
         uses: HazyVT/pkg-ver@v1.0.0
@@ -72,7 +74,7 @@ jobs:
           asset_content_type: application
 
   build-linux:
-    name: Create Windows Release
+    name: Create Linux Release
     needs: create-release
     runs-on: ubuntu-latest
     env:
