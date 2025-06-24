@@ -18,6 +18,8 @@ jobs:
       - name: Get version
         id: pkg-ver
         uses: HazyVT/pkg-ver@v1.0.0
+        with:
+          directory: ${{ github.workspace }}
   
   create-release:
     name: Create release 
